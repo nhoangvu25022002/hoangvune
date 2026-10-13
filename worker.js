@@ -2,7 +2,6 @@ export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
 
-    // 1. API cho người dùng nộp bài làm
     if (url.pathname === '/api/submit' && request.method === 'POST') {
       try {
         const data = await request.json();
@@ -27,7 +26,6 @@ export default {
       }
     }
 
-    // 2. API cho Admin lấy danh sách bài làm (/api/admin/results)
     if (url.pathname === '/api/admin/results') {
       const adminPw = request.headers.get('x-admin-password');
       if (adminPw !== env.ADMIN_PASSWORD) {
@@ -56,7 +54,6 @@ export default {
       }
     }
 
-    // 3. API Xuất file Excel cho Admin (/api/admin/export)
     if (url.pathname === '/api/admin/export') {
       const adminPw = request.headers.get('x-admin-password');
       if (adminPw !== env.ADMIN_PASSWORD) {
@@ -85,12 +82,10 @@ export default {
       });
     }
 
-    // 4. Phục vụ trang Admin HTML
     if (url.pathname === '/admin' || url.pathname === '/admin/') {
       return env.ASSETS.fetch(new Request(new URL('/admin.html', request.url), request));
     }
 
-    // 5. Mặc định phục vụ các file tĩnh khác
     return env.ASSETS.fetch(request);
   }
 };
