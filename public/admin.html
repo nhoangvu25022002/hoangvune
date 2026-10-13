@@ -1,0 +1,286 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Quản lý kết quả · Kiểm Tra Kana</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=Klee+One:wght@400;600&display=swap">
+<style>
+:root{
+  --bg:#f3f4f5;--surface:#ffffff;--surface-2:#eceef0;--line:#d9dde0;--fg:#1d2327;--muted:#5d666d;
+  --accent:#3f5878;--accent-fg:#ffffff;--accent-soft:#e2e8ef;--ok:#2d7650;--ok-soft:#e0f0e7;--bad:#a9423a;--bad-soft:#f5e2e0;
+  --font-ui:'Be Vietnam Pro',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  --font-kana:'Klee One','Hiragino Maru Gothic ProN','Yu Gothic','Noto Sans CJK JP',sans-serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#15181b;--surface:#1d2125;--surface-2:#262b30;--line:#343a40;--fg:#e7eaec;--muted:#99a2aa;
+    --accent:#8fa9cb;--accent-fg:#12181f;--accent-soft:#263243;--ok:#6cc08f;--ok-soft:#1f3328;--bad:#e08b84;--bad-soft:#3a2523;
+    color-scheme:dark;
+  }
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--font-ui);font-size:15px;line-height:1.55}
+h1,h2,p{margin:0}
+h1{font-size:clamp(1.5rem,5.5vw,2rem);font-weight:700;letter-spacing:-.01em;line-height:1.25}
+button,input,select{font:inherit;color:inherit}
+.muted{color:var(--muted)}
+.sub{font-size:.8rem;color:var(--muted)}
+.kana{font-family:var(--font-kana)}
+.num{font-variant-numeric:tabular-nums}
+.nowrap{white-space:nowrap}
+.top{background:var(--surface);border-bottom:1px solid var(--line)}
+.bar{max-width:1100px;margin-inline:auto;padding:12px 16px;display:flex;flex-wrap:wrap;align-items:center;gap:10px 16px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:700;margin-right:auto;color:inherit;text-decoration:none}
+.mark{display:grid;place-items:center;width:32px;height:32px;border-radius:8px;background:var(--accent);color:var(--accent-fg);font-size:1.15rem;font-weight:600}
+.tag{font-size:.74rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.wrap{max-width:1100px;margin-inline:auto;padding:24px 16px 56px}
+.stack{display:flex;flex-direction:column;gap:20px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:20px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:.62em 1.15em;border-radius:8px;border:1px solid var(--line);background:var(--surface);cursor:pointer;font-weight:500;line-height:1.3}
+.btn:hover{background:var(--surface-2)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn-primary{background:var(--accent);border-color:var(--accent);color:var(--accent-fg);font-weight:600}
+.btn-primary:hover{background:var(--accent);filter:brightness(1.08)}
+.btn.small{padding:.35em .8em;font-size:.85rem}
+.btn.danger{color:var(--bad)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.field{display:flex;flex-direction:column;gap:6px}
+.field label{font-size:.85rem;font-weight:600}
+input,select{padding:.6em .8em;border:1px solid var(--line);border-radius:8px;background:var(--surface);font-size:16px}
+.err{color:var(--bad);font-size:.88rem}
+.login{max-width:400px;margin:24px auto 0}
+.form{display:flex;flex-direction:column;gap:16px}
+.head{display:flex;flex-wrap:wrap;gap:12px 16px;align-items:flex-end;justify-content:space-between}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.tile{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 16px;display:flex;flex-direction:column;gap:2px}
+.tile b{font-size:1.8rem;font-weight:700;font-variant-numeric:tabular-nums;line-height:1.2}
+.filters{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.filters input{flex:1;min-width:200px;max-width:340px}
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:10px;background:var(--surface)}
+table{width:100%;border-collapse:collapse;min-width:820px}
+th,td{text-align:left;padding:10px 14px;vertical-align:top}
+th{font-size:.74rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600;border-bottom:1px solid var(--line);white-space:nowrap;position:sticky;top:0;background:var(--surface)}
+td{border-top:1px solid var(--line)}
+tbody tr:first-child td{border-top:0}
+.nm{font-weight:600;overflow-wrap:anywhere}
+.wrongc{font-family:var(--font-kana);font-size:1.05rem;letter-spacing:.08em;overflow-wrap:anywhere;max-width:240px}
+.pill{display:inline-block;padding:2px 11px;border-radius:999px;font-size:.8rem;font-weight:600;white-space:nowrap}
+.pill.ok{background:var(--ok-soft);color:var(--ok)}
+.pill.warn{background:var(--accent-soft);color:var(--accent)}
+.pill.bad{background:var(--bad-soft);color:var(--bad)}
+.empty{padding:28px 16px;text-align:center;color:var(--muted);background:var(--surface);border:1px dashed var(--line);border-radius:10px}
+.status{font-size:.88rem;color:var(--muted)}
+.status.bad{color:var(--bad)}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="bar">
+    <a class="brand" href="/"><span class="mark kana" aria-hidden="true">あ</span><span>Kiểm Tra Kana</span></a>
+    <span class="tag">Quản lý</span>
+    <button class="btn small" id="logout" type="button" hidden>Đăng xuất</button>
+  </div>
+</header>
+<main class="wrap" id="main">
+  <section class="login" id="login">
+    <form class="card form" id="login-form" novalidate>
+      <h1>Trang quản lý</h1>
+      <p class="muted">Nhập mật khẩu quản trị để xem toàn bộ bài làm và xuất ra Excel.</p>
+      <div class="field"><label for="pw">Mật khẩu</label>
+        <input id="pw" type="password" autocomplete="current-password" required></div>
+      <p class="err" id="login-err" role="alert" hidden></p>
+      <button class="btn btn-primary" type="submit" id="login-btn">Vào trang quản lý</button>
+    </form>
+  </section>
+
+  <div class="stack" id="dash" hidden>
+    <div class="head">
+      <div><h1>Tất cả bài làm</h1><p class="muted" id="sub">Đang tải…</p></div>
+      <div class="filters">
+        <button class="btn" type="button" id="reload">Tải lại</button>
+        <button class="btn btn-primary" type="button" id="export">Xuất Excel (.xlsx)</button>
+      </div>
+    </div>
+    <p class="status" id="msg" role="status"></p>
+    <div class="tiles" id="tiles"></div>
+    <div class="filters">
+      <input id="q" type="search" placeholder="Tìm theo tên hoặc số điện thoại" aria-label="Tìm bài làm">
+      <select id="part" aria-label="Lọc theo phần thi">
+        <option value="">Tất cả phần thi</option>
+        <option value="hiragana">Hiragana</option>
+        <option value="katakana">Katakana</option>
+      </select>
+    </div>
+    <div id="table"></div>
+  </div>
+</main>
+
+<script>
+(function(){
+'use strict';
+var $ = function(s){ return document.querySelector(s); };
+var esc = function(s){
+  return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){
+    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+  });
+};
+var LABEL = { hiragana:'Hiragana', katakana:'Katakana' };
+var KEY = 'kana.admin';
+var pw = null, rows = [];
+try { pw = sessionStorage.getItem(KEY); } catch(e){}
+
+function rate(p){
+  if (p >= 90) return {t:'Xuất sắc', c:'ok'};
+  if (p >= 75) return {t:'Tốt', c:'ok'};
+  if (p >= 60) return {t:'Đạt', c:'warn'};
+  return {t:'Cần ôn thêm', c:'bad'};
+}
+function fold(s){
+  return String(s || '').normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/đ/g,'d').replace(/Đ/g,'D').toLowerCase();
+}
+function fmtTime(ts){
+  try { return new Date(ts).toLocaleString('vi-VN', {day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit'}); }
+  catch(e){ return ''; }
+}
+function api(path, opts){
+  opts = opts || {};
+  opts.headers = Object.assign({ 'x-admin-password': pw || '' }, opts.headers || {});
+  opts.cache = 'no-store';
+  return fetch(path, opts).then(function(r){
+    if (r.status === 401) throw { code:'unauthorized' };
+    if (r.status === 503) throw { code:'not_configured' };
+    if (!r.ok) throw { code:'error' };
+    return r;
+  });
+}
+function errText(e){
+  if (e && e.code === 'unauthorized') return 'Mật khẩu không đúng.';
+  if (e && e.code === 'not_configured') return 'Trang quản lý chưa được cấu hình. Hãy đặt biến môi trường ADMIN_PASSWORD trong Netlify rồi triển khai lại.';
+  return 'Không kết nối được máy chủ, vui lòng thử lại.';
+}
+
+function showLogin(msg){
+  $('#login').hidden = false; $('#dash').hidden = true; $('#logout').hidden = true;
+  var err = $('#login-err');
+  err.hidden = !msg; err.textContent = msg || '';
+  $('#pw').focus();
+}
+function load(fromLogin){
+  var btn = $('#login-btn'); btn.disabled = true;
+  $('#msg').textContent = ''; $('#msg').className = 'status';
+  return api('/api/admin/results').then(function(r){ return r.json(); }).then(function(list){
+    rows = Array.isArray(list) ? list : [];
+    try { sessionStorage.setItem(KEY, pw); } catch(e){}
+    $('#login').hidden = true; $('#dash').hidden = false; $('#logout').hidden = false;
+    renderAll();
+  }).catch(function(e){
+    if (e && e.code === 'unauthorized'){
+      pw = null; try { sessionStorage.removeItem(KEY); } catch(x){}
+      showLogin(fromLogin ? errText(e) : '');
+    } else if ($('#dash').hidden){
+      showLogin(errText(e));
+    } else {
+      $('#msg').textContent = errText(e); $('#msg').className = 'status bad';
+    }
+  }).then(function(){ btn.disabled = false; });
+}
+
+function filtered(){
+  var q = fold($('#q').value.trim()), qd = q.replace(/\D/g,''), part = $('#part').value;
+  return rows.filter(function(r){
+    if (part && r.part !== part) return false;
+    if (!q) return true;
+    return fold(r.name).indexOf(q) >= 0 || (qd && r.phone.indexOf(qd) >= 0);
+  });
+}
+function renderAll(){
+  var people = {};
+  rows.forEach(function(r){ people[r.phone] = 1; });
+  var avg = rows.length ? Math.round(rows.reduce(function(s,r){ return s + r.pct; }, 0) / rows.length) + '%' : '–';
+  function tile(l, v){ return '<div class="tile"><span class="sub">' + l + '</span><b>' + v + '</b></div>'; }
+  $('#tiles').innerHTML = tile('Lượt thi', rows.length) + tile('Người làm bài', Object.keys(people).length) + tile('Điểm trung bình', avg);
+  renderTable();
+}
+function renderTable(){
+  var list = filtered();
+  $('#sub').textContent = list.length === rows.length
+    ? rows.length + ' bài làm, mới nhất ở trên.'
+    : 'Đang hiển thị ' + list.length + ' trên ' + rows.length + ' bài làm.';
+  if (!rows.length){ $('#table').innerHTML = '<div class="empty">Chưa có bài làm nào.</div>'; return; }
+  if (!list.length){ $('#table').innerHTML = '<div class="empty">Không có bài làm phù hợp.</div>'; return; }
+  $('#table').innerHTML = '<div class="tablewrap"><table><thead><tr>' +
+    '<th>Thời gian</th><th>Họ và tên</th><th>Số điện thoại</th><th>Phần</th><th>Điểm</th><th>Chữ làm sai</th><th></th>' +
+    '</tr></thead><tbody>' + list.map(function(r){
+      var rt = rate(r.pct);
+      return '<tr><td class="sub nowrap num">' + fmtTime(r.ts) + '</td>' +
+        '<td class="nm">' + esc(r.name) + '</td>' +
+        '<td class="num nowrap">' + esc(r.phone) + '</td>' +
+        '<td>' + esc(LABEL[r.part] || r.part) + '</td>' +
+        '<td class="nowrap"><strong class="num">' + r.score + '/' + r.total + '</strong> <span class="pill ' + rt.c + '">' + rt.t + '</span></td>' +
+        '<td class="wrongc">' + (r.wrong ? esc(r.wrong) : '<span class="sub">Không có</span>') + '</td>' +
+        '<td><button class="btn small danger" type="button" data-del="' + r.id + '">Xóa</button></td></tr>';
+    }).join('') + '</tbody></table></div>';
+}
+
+function exportXlsx(){
+  var btn = $('#export'); btn.disabled = true; btn.textContent = 'Đang tạo tệp…';
+  var name = 'ket-qua-kana.xlsx';
+  api('/api/admin/export').then(function(r){
+    var m = /filename="([^"]+)"/.exec(r.headers.get('Content-Disposition') || '');
+    if (m) name = m[1];
+    return r.blob();
+  }).then(function(blob){
+    var url = URL.createObjectURL(blob), a = document.createElement('a');
+    a.href = url; a.download = name; document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function(){ URL.revokeObjectURL(url); }, 1000);
+    $('#msg').textContent = 'Đã tải xuống ' + name + '.'; $('#msg').className = 'status';
+  }).catch(function(e){
+    if (e && e.code === 'unauthorized'){ showLogin(errText(e)); return; }
+    $('#msg').textContent = errText(e); $('#msg').className = 'status bad';
+  }).then(function(){ btn.disabled = false; btn.textContent = 'Xuất Excel (.xlsx)'; });
+}
+function del(btn){
+  if (!btn.dataset.armed){
+    btn.dataset.armed = '1'; btn.textContent = 'Xác nhận xóa';
+    setTimeout(function(){ if (btn.isConnected){ delete btn.dataset.armed; btn.textContent = 'Xóa'; } }, 4000);
+    return;
+  }
+  var id = +btn.dataset.del; btn.disabled = true;
+  api('/api/admin/results?id=' + id, { method:'DELETE' }).then(function(){
+    rows = rows.filter(function(r){ return r.id !== id; });
+    renderAll();
+  }).catch(function(e){
+    btn.disabled = false;
+    $('#msg').textContent = errText(e); $('#msg').className = 'status bad';
+  });
+}
+
+$('#login-form').addEventListener('submit', function(e){
+  e.preventDefault();
+  var v = $('#pw').value;
+  if (!v){ showLogin('Vui lòng nhập mật khẩu.'); return; }
+  pw = v; load(true);
+});
+$('#logout').addEventListener('click', function(){
+  pw = null; rows = []; try { sessionStorage.removeItem(KEY); } catch(e){}
+  $('#pw').value = ''; showLogin('');
+});
+$('#reload').addEventListener('click', function(){ load(false); });
+$('#export').addEventListener('click', exportXlsx);
+$('#q').addEventListener('input', renderTable);
+$('#part').addEventListener('change', renderTable);
+$('#table').addEventListener('click', function(e){
+  var b = e.target.closest('[data-del]'); if (b) del(b);
+});
+
+if (pw) load(false); else showLogin('');
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,840 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Kiểm Tra Kana</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=Klee+One:wght@400;600&display=swap">
+<style>
+/* Layout: một cột hẹp (880px), thanh đầu trang có tab, mỗi màn hình chỉ làm một việc.
+   Màu: xám trung tính hơi lạnh, nhấn bằng chàm (màu nhuộm indigo truyền thống Nhật). */
+:root{
+  --bg:#f3f4f5;
+  --surface:#ffffff;
+  --surface-2:#eceef0;
+  --line:#d9dde0;
+  --fg:#1d2327;
+  --muted:#5d666d;
+  --accent:#3f5878;
+  --accent-fg:#ffffff;
+  --accent-soft:#e2e8ef;
+  --ok:#2d7650;
+  --ok-soft:#e0f0e7;
+  --bad:#a9423a;
+  --bad-soft:#f5e2e0;
+  --font-ui:'Be Vietnam Pro',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  --font-kana:'Klee One','Hiragino Maru Gothic ProN','Yu Gothic','Noto Sans CJK JP',sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#15181b;
+    --surface:#1d2125;
+    --surface-2:#262b30;
+    --line:#343a40;
+    --fg:#e7eaec;
+    --muted:#99a2aa;
+    --accent:#8fa9cb;
+    --accent-fg:#12181f;
+    --accent-soft:#263243;
+    --ok:#6cc08f;
+    --ok-soft:#1f3328;
+    --bad:#e08b84;
+    --bad-soft:#3a2523;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#15181b;
+  --surface:#1d2125;
+  --surface-2:#262b30;
+  --line:#343a40;
+  --fg:#e7eaec;
+  --muted:#99a2aa;
+  --accent:#8fa9cb;
+  --accent-fg:#12181f;
+  --accent-soft:#263243;
+  --ok:#6cc08f;
+  --ok-soft:#1f3328;
+  --bad:#e08b84;
+  --bad-soft:#3a2523;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--font-ui);font-size:15px;line-height:1.55}
+h1,h2,h3,p,ul{margin:0}
+h1,h2,h3{line-height:1.25;text-wrap:balance}
+h1{font-size:clamp(1.5rem,5.5vw,2rem);font-weight:700;letter-spacing:-.01em}
+h2{font-size:1.2rem;font-weight:600}
+h3{font-size:1rem;font-weight:600}
+button,input{font:inherit;color:inherit}
+.muted{color:var(--muted)}
+.kana{font-family:var(--font-kana)}
+.eyebrow{font-size:.74rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.sub{font-size:.8rem;color:var(--muted)}
+.nowrap{white-space:nowrap}
+.num{font-variant-numeric:tabular-nums}
+
+/* header */
+.top{background:var(--surface);border-bottom:1px solid var(--line)}
+.bar{max-width:880px;margin-inline:auto;padding-inline:16px;padding-block:12px;display:flex;flex-wrap:wrap;align-items:center;gap:10px 16px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:700;margin-right:auto}
+.mark{display:grid;place-items:center;width:32px;height:32px;border-radius:8px;background:var(--accent);color:var(--accent-fg);font-size:1.15rem;font-weight:600}
+nav{display:flex;gap:4px;order:3;width:100%}
+.tab{border:0;background:transparent;padding:7px 14px;border-radius:8px;cursor:pointer;color:var(--muted);font-weight:500}
+.tab:hover{background:var(--surface-2)}
+.tab.on{background:var(--accent-soft);color:var(--accent);font-weight:600}
+.who{display:flex;align-items:center;gap:10px;min-width:0}
+.tools{display:flex;align-items:center;gap:10px;order:2;min-width:0}
+#who-name{font-size:.88rem;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:34vw}
+@media (min-width:680px){
+  nav{order:0;width:auto}
+  .brand{margin-right:0}
+  .tools{margin-left:auto}
+  #who-name{max-width:260px}
+}
+
+/* share */
+.share{border-top:1px solid var(--line);background:var(--surface-2)}
+.share-in{max-width:880px;margin-inline:auto;padding-inline:16px;padding-block:12px;display:flex;flex-direction:column;gap:8px}
+.linkrow{display:flex;gap:8px}
+.linkrow input{flex:1;min-width:0}
+
+/* layout */
+.wrap{max-width:880px;margin-inline:auto;padding-inline:16px;padding-block:24px 56px}
+.stack{display:flex;flex-direction:column;gap:20px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:20px}
+
+/* buttons and fields */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:.62em 1.15em;border-radius:8px;border:1px solid var(--line);background:var(--surface);cursor:pointer;font-weight:500;line-height:1.3}
+.btn:hover{background:var(--surface-2)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn-primary{background:var(--accent);border-color:var(--accent);color:var(--accent-fg);font-weight:600}
+.btn-primary:hover{background:var(--accent);filter:brightness(1.08)}
+.btn.small{padding:.35em .8em;font-size:.85rem}
+.btn.block{width:100%}
+.btn.danger{color:var(--bad)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.field{display:flex;flex-direction:column;gap:6px}
+.field label{font-size:.85rem;font-weight:600}
+input[type=text],input[type=search],input[type=tel],input:not([type]){width:100%;padding:.7em .85em;border:1px solid var(--line);border-radius:8px;background:var(--surface);font-size:16px}
+input::placeholder{color:var(--muted);opacity:.7}
+.err{color:var(--bad);font-size:.88rem}
+
+/* login */
+.login{max-width:420px;margin:12px auto 0;display:flex;flex-direction:column;gap:16px}
+.login-art{display:flex;gap:14px;font-size:4rem;font-weight:600;line-height:1;color:var(--accent)}
+.login-art span:last-child{color:var(--muted)}
+.form{display:flex;flex-direction:column;gap:16px}
+.facts{display:flex;flex-wrap:wrap;gap:4px 18px;padding:0;list-style:none;font-size:.85rem;color:var(--muted)}
+
+/* home */
+.head{display:flex;flex-direction:column;gap:6px}
+.parts{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,330px),1fr));gap:16px}
+.part{display:grid;grid-template-columns:auto 1fr;gap:16px;align-items:start;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:20px}
+.part-glyph{display:grid;place-items:center;width:68px;height:68px;border-radius:10px;background:var(--surface-2);font-size:2.6rem;font-weight:600;color:var(--accent)}
+.part-body{display:flex;flex-direction:column;gap:8px;align-items:flex-start;min-width:0}
+.best{font-size:.88rem}
+.best strong{font-variant-numeric:tabular-nums}
+
+/* quiz */
+.qtop{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.qmeta{display:flex;flex-direction:column;gap:2px}
+.progress{height:6px;border-radius:3px;background:var(--surface-2);overflow:hidden}
+.progress i{display:block;height:100%;background:var(--accent);transition:width .2s}
+.qcard{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:22px 16px 24px;display:flex;flex-direction:column;align-items:center;gap:14px;min-width:0}
+.qcap{color:var(--muted);font-size:.92rem;text-align:center}
+.qglyph{font-weight:600;font-size:clamp(5rem,24vw,8rem);line-height:1.1}
+.qromaji{font-weight:600;font-size:clamp(3.2rem,16vw,5.5rem);line-height:1.15;letter-spacing:.02em}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:10px;width:100%;max-width:520px;margin-top:6px}
+.opt{position:relative;min-height:68px;padding:10px 12px;border-radius:10px;border:1.5px solid var(--line);background:var(--surface);cursor:pointer;font-size:1.5rem;font-weight:600;text-align:center}
+.opt.kana{font-family:var(--font-kana);font-size:2.2rem}
+.opt:hover{background:var(--surface-2)}
+.opt.sel{background:var(--accent-soft);border-color:var(--accent);color:var(--accent)}
+.opt .key{position:absolute;left:8px;top:6px;font-family:var(--font-ui);font-size:.68rem;font-weight:500;color:var(--muted)}
+.qnav{display:flex;justify-content:space-between;gap:10px}
+.dots{display:flex;flex-wrap:wrap;gap:6px}
+.dot{width:34px;height:34px;border-radius:8px;border:1px solid var(--line);background:var(--surface);cursor:pointer;font-size:.82rem;font-variant-numeric:tabular-nums}
+.dot.done{background:var(--accent-soft);border-color:var(--accent);color:var(--accent)}
+.dot.cur{outline:2px solid var(--accent);outline-offset:1px}
+.submitrow{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.note{font-size:.88rem;color:var(--bad)}
+
+/* result */
+.resulthead{display:flex;flex-direction:column;gap:10px;align-items:flex-start}
+.score{font-size:clamp(3.6rem,17vw,5.2rem);font-weight:700;line-height:1;font-variant-numeric:tabular-nums}
+.score small{font-size:.38em;color:var(--muted);font-weight:500}
+.pill{display:inline-block;padding:2px 11px;border-radius:999px;font-size:.8rem;font-weight:600}
+.pill.ok{background:var(--ok-soft);color:var(--ok)}
+.pill.warn{background:var(--accent-soft);color:var(--accent)}
+.pill.bad{background:var(--bad-soft);color:var(--bad)}
+.status{font-size:.88rem;color:var(--muted)}
+.status.good{color:var(--ok)}
+.status.warnmsg{color:var(--bad)}
+.actions{display:flex;flex-wrap:wrap;gap:10px}
+.wrong{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,250px),1fr));gap:8px}
+.witem{display:flex;align-items:center;gap:12px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--surface);min-width:0}
+.wglyph{font-size:2rem;font-weight:600;line-height:1;min-width:2.2rem;text-align:center}
+.wtext{display:flex;flex-direction:column;font-size:.85rem;min-width:0}
+.wtext .you{color:var(--bad)}
+.wtext .right{color:var(--ok)}
+
+/* stats */
+.stats-head{display:flex;flex-wrap:wrap;gap:12px 16px;align-items:flex-end;justify-content:space-between}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--surface)}
+.segbtn{border:0;background:transparent;padding:7px 14px;cursor:pointer;font-size:.88rem}
+.segbtn.on{background:var(--accent);color:var(--accent-fg);font-weight:600}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px}
+.tile{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 16px;display:flex;flex-direction:column;gap:2px}
+.tile b{font-size:1.8rem;font-weight:700;font-variant-numeric:tabular-nums;line-height:1.2}
+.sec{display:flex;flex-direction:column;gap:10px}
+.sechead{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;justify-content:space-between}
+.search{max-width:260px}
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:10px;background:var(--surface)}
+table{width:100%;border-collapse:collapse;min-width:560px}
+th,td{text-align:left;padding:10px 14px;vertical-align:top}
+th{font-size:.74rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600;border-bottom:1px solid var(--line);white-space:nowrap}
+td{border-top:1px solid var(--line)}
+tbody tr:first-child td{border-top:0}
+.nm{font-weight:600;overflow-wrap:anywhere}
+.cellscore{display:flex;flex-direction:column;gap:3px;min-width:96px}
+.cellscore strong{font-variant-numeric:tabular-nums}
+.meter{height:4px;border-radius:2px;background:var(--surface-2);overflow:hidden}
+.meter i{display:block;height:100%;background:var(--accent)}
+.empty{padding:28px 16px;text-align:center;color:var(--muted);background:var(--surface);border:1px dashed var(--line);border-radius:10px;display:flex;flex-direction:column;align-items:center;gap:12px}
+.mist{display:flex;flex-direction:column;gap:10px}
+.mrow{display:flex;flex-wrap:wrap;align-items:center;gap:8px 10px}
+.mrow .lab{min-width:84px;font-weight:600;font-size:.88rem}
+.chip{display:inline-flex;align-items:baseline;gap:6px;padding:4px 10px;border:1px solid var(--line);border-radius:8px;background:var(--surface);font-size:.82rem}
+.chip .kana{font-size:1.25rem;font-weight:600}
+.chip b{color:var(--bad);font-variant-numeric:tabular-nums}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<header class="top">
+  <div class="bar">
+    <div class="brand"><span class="mark kana" aria-hidden="true">あ</span><span>Kiểm Tra Kana</span></div>
+    <nav id="nav" aria-label="Điều hướng" hidden>
+      <button class="tab" id="tab-home" data-act="home" type="button">Làm bài</button>
+      <button class="tab" id="tab-stats" data-act="stats" type="button">Thống kê</button>
+    </nav>
+    <div class="tools">
+      <button class="btn small" id="share-btn" data-act="share" type="button" aria-expanded="false" aria-controls="share-panel">Chia sẻ</button>
+      <div class="who" id="who" hidden>
+        <span id="who-name"></span>
+        <button class="btn small" data-act="logout" type="button">Đăng xuất</button>
+      </div>
+    </div>
+  </div>
+  <div class="share" id="share-panel" hidden>
+    <div class="share-in">
+      <p class="sub">Gửi liên kết này cho người quen để họ vào thi.</p>
+      <div class="linkrow">
+        <input id="share-link" type="text" readonly value="" aria-label="Liên kết trang thi">
+        <button class="btn btn-primary small" id="copy-btn" data-act="copy" type="button">Sao chép</button>
+      </div>
+      <p class="sub" id="copy-msg" role="status"></p>
+    </div>
+  </div>
+</header>
+<main class="wrap" id="main"></main>
+
+<script>
+(function(){
+'use strict';
+
+var $ = function(s){ return document.querySelector(s); };
+var main = $('#main');
+var esc = function(s){
+  return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){
+    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+  });
+};
+var TOTAL = 20;
+
+/* Bảng chữ: 46 chữ cơ bản + 23 chữ có dấu (bỏ ぢ, づ vì trùng cách đọc với じ, ず). */
+var PAIRS = [
+  ['あ','a'],['い','i'],['う','u'],['え','e'],['お','o'],
+  ['か','ka'],['き','ki'],['く','ku'],['け','ke'],['こ','ko'],
+  ['さ','sa'],['し','shi'],['す','su'],['せ','se'],['そ','so'],
+  ['た','ta'],['ち','chi'],['つ','tsu'],['て','te'],['と','to'],
+  ['な','na'],['に','ni'],['ぬ','nu'],['ね','ne'],['の','no'],
+  ['は','ha'],['ひ','hi'],['ふ','fu'],['へ','he'],['ほ','ho'],
+  ['ま','ma'],['み','mi'],['む','mu'],['め','me'],['も','mo'],
+  ['や','ya'],['ゆ','yu'],['よ','yo'],
+  ['ら','ra'],['り','ri'],['る','ru'],['れ','re'],['ろ','ro'],
+  ['わ','wa'],['を','wo'],['ん','n'],
+  ['が','ga'],['ぎ','gi'],['ぐ','gu'],['げ','ge'],['ご','go'],
+  ['ざ','za'],['じ','ji'],['ず','zu'],['ぜ','ze'],['ぞ','zo'],
+  ['だ','da'],['で','de'],['ど','do'],
+  ['ば','ba'],['び','bi'],['ぶ','bu'],['べ','be'],['ぼ','bo'],
+  ['ぱ','pa'],['ぴ','pi'],['ぷ','pu'],['ぺ','pe'],['ぽ','po']
+];
+function toKata(s){
+  return s.replace(/[ぁ-ゖ]/g, function(c){ return String.fromCharCode(c.charCodeAt(0) + 0x60); });
+}
+var PARTS = {
+  hiragana: { key:'hiragana', no:1, label:'Hiragana', sample:'あ',
+    items: PAIRS.map(function(p){ return {ch:p[0], ro:p[1]}; }) },
+  katakana: { key:'katakana', no:2, label:'Katakana', sample:'ア',
+    items: PAIRS.map(function(p){ return {ch:toKata(p[0]), ro:p[1]}; }) }
+};
+var CH2RO = {};
+Object.keys(PARTS).forEach(function(k){ PARTS[k].items.forEach(function(i){ CH2RO[i.ch] = i.ro; }); });
+
+/* ---------- trạng thái ---------- */
+var online = false;
+var session = null, view = 'login', quiz = null, result = null;
+var scope = 'all', search = '';
+var shared = [], pending = [], loaded = false;
+
+var store = {
+  get: function(k){ try { return JSON.parse(localStorage.getItem(k)); } catch(e){ return null; } },
+  set: function(k,v){ try { localStorage.setItem(k, JSON.stringify(v)); } catch(e){} },
+  del: function(k){ try { localStorage.removeItem(k); } catch(e){} }
+};
+var savedPending = store.get('kana.pending');
+if (Array.isArray(savedPending)) pending = savedPending.map(clean).filter(Boolean);
+
+/* ---------- tiện ích ---------- */
+function hash(str){
+  var h1 = 0xdeadbeef, h2 = 0x41c6ce57;
+  for (var i = 0; i < str.length; i++){
+    var ch = str.charCodeAt(i);
+    h1 = Math.imul(h1 ^ ch, 2654435761);
+    h2 = Math.imul(h2 ^ ch, 1597334677);
+  }
+  h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507) ^ Math.imul(h2 ^ (h2 >>> 13), 3266489909);
+  h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507) ^ Math.imul(h1 ^ (h1 >>> 13), 3266489909);
+  return (4294967296 * (2097151 & h2) + (h1 >>> 0)).toString(16);
+}
+function shuffle(a){
+  for (var i = a.length - 1; i > 0; i--){
+    var j = Math.floor(Math.random() * (i + 1));
+    var t = a[i]; a[i] = a[j]; a[j] = t;
+  }
+  return a;
+}
+function fold(s){
+  return String(s || '').normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/đ/g,'d').replace(/Đ/g,'D').toLowerCase();
+}
+function normName(v){ return String(v || '').replace(/\s+/g,' ').trim(); }
+function normPhone(v){
+  var p = String(v || '').replace(/[\s.\-()]/g,'');
+  if (p.indexOf('+84') === 0) p = '0' + p.slice(3);
+  else if (p.indexOf('84') === 0 && p.length === 11) p = '0' + p.slice(2);
+  return p;
+}
+function validPhone(p){ return /^0\d{9}$/.test(p); }
+function makeSession(name, phone){
+  return { name:name, phone:phone, mid:'m' + hash(phone), mask: phone.slice(0,3) + '****' + phone.slice(-3) };
+}
+function rate(p){
+  if (p >= 90) return {t:'Xuất sắc', c:'ok'};
+  if (p >= 75) return {t:'Tốt', c:'ok'};
+  if (p >= 60) return {t:'Đạt', c:'warn'};
+  return {t:'Cần ôn thêm', c:'bad'};
+}
+function fmtTime(ts){
+  if (!ts) return '';
+  try {
+    return new Date(ts).toLocaleString('vi-VN', {day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit'});
+  } catch(e){ return ''; }
+}
+function clean(a){
+  if (!a || !PARTS[a.part] || typeof a.mid !== 'string') return null;
+  return {
+    id: a.id, mid: a.mid,
+    name: String(a.name || 'Ẩn danh').slice(0,60),
+    mask: String(a.phoneMask || a.mask || '').slice(0,16),
+    part: a.part, score: +a.score || 0, total: +a.total || TOTAL,
+    pct: +a.pct || 0, ts: +a.ts || 0, wrong: String(a.wrong || '').slice(0,80)
+  };
+}
+function allAttempts(){
+  return shared.concat(pending).sort(function(a,b){ return b.ts - a.ts; });
+}
+
+/* ---------- bài thi ---------- */
+function buildQuiz(partKey){
+  var items = PARTS[partKey].items;
+  var picked = shuffle(items.slice()).slice(0, TOTAL);
+  var questions = picked.map(function(it){
+    var type = Math.random() < 0.5 ? 'k2r' : 'r2k';
+    var others = shuffle(items.filter(function(x){ return x.ch !== it.ch && x.ro !== it.ro; })).slice(0,3);
+    var opts = shuffle([it].concat(others)).map(function(x){ return type === 'k2r' ? x.ro : x.ch; });
+    return { ch:it.ch, ro:it.ro, type:type, opts:opts, answer: type === 'k2r' ? it.ro : it.ch, picked:null };
+  });
+  return { part:partKey, questions:questions, i:0, confirmEmpty:false, exitArmed:false };
+}
+function startQuiz(partKey){
+  if (!PARTS[partKey]) return;
+  quiz = buildQuiz(partKey);
+  result = null;
+  view = 'quiz';
+  render();
+}
+function answeredCount(){
+  return quiz.questions.filter(function(q){ return q.picked !== null; }).length;
+}
+function go(i){
+  if (!quiz || i < 0 || i >= quiz.questions.length) return;
+  quiz.i = i;
+  renderQuiz();
+}
+function pick(idx){
+  if (view !== 'quiz' || !quiz) return;
+  var q = quiz.questions[quiz.i];
+  if (idx < 0 || idx >= q.opts.length) return;
+  q.picked = q.opts[idx];
+  quiz.confirmEmpty = false;
+  main.querySelectorAll('.opt').forEach(function(b, j){
+    b.classList.toggle('sel', j === idx);
+    b.setAttribute('aria-pressed', j === idx ? 'true' : 'false');
+  });
+  updateQuizMeta();
+}
+function exitQuiz(btn){
+  if (quiz.exitArmed){ quiz = null; view = 'home'; render(); return; }
+  quiz.exitArmed = true;
+  btn.textContent = 'Bấm lần nữa để thoát';
+  setTimeout(function(){ if (quiz && btn.isConnected){ quiz.exitArmed = false; btn.textContent = 'Thoát bài thi'; } }, 4000);
+}
+function submit(){
+  var left = quiz.questions.length - answeredCount();
+  if (left > 0 && !quiz.confirmEmpty){
+    quiz.confirmEmpty = true;
+    updateQuizMeta();
+    return;
+  }
+  var score = 0, wrongChars = '';
+  quiz.questions.forEach(function(q){
+    if (q.picked === q.answer) score++; else wrongChars += q.ch;
+  });
+  var doc = {
+    mid: session.mid, name: session.name, phoneMask: session.mask,
+    part: quiz.part, score: score, total: quiz.questions.length,
+    pct: Math.round(score / quiz.questions.length * 100),
+    ts: Date.now(), wrong: wrongChars
+  };
+  result = { part: quiz.part, score: doc.score, total: doc.total, pct: doc.pct, questions: quiz.questions, status: 'saving' };
+  quiz = null;
+  view = 'result';
+  render();
+  var current = result;
+  saveAttempt(doc).then(function(st){
+    current.status = st;
+    if (view === 'result' && result === current) updateResultStatus();
+  });
+}
+function saveAttempt(doc){
+  function keepLocal(status){
+    var c = clean(doc);
+    c.id = 'L' + doc.ts;
+    pending.push(c);
+    store.set('kana.pending', pending.slice(-200));
+    return status;
+  }
+  var body = { name: doc.name, phone: session.phone, part: doc.part, score: doc.score, total: doc.total, wrong: doc.wrong };
+  return fetch('/api/results', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body) })
+    .then(function(r){
+      if (r.status === 400) return keepLocal('denied');
+      if (!r.ok) throw new Error('save');
+      return r.json().then(function(x){
+        var c = clean(doc); c.id = x.id; c.ts = x.ts || doc.ts;
+        shared.unshift(c);
+        online = true;
+        return 'shared';
+      });
+    })
+    .catch(function(){ return keepLocal('local'); });
+}
+
+/* ---------- kết nối kho dữ liệu chung ---------- */
+function refresh(){
+  if (view === 'home') renderHome();
+  else if (view === 'stats') updateStats();
+}
+function loadShared(){
+  return fetch('/api/results', { cache:'no-store' })
+    .then(function(r){ if (!r.ok) throw new Error('load'); return r.json(); })
+    .then(function(list){
+      shared = (Array.isArray(list) ? list : []).map(clean).filter(Boolean);
+      online = true;
+    })
+    .catch(function(){})
+    .then(function(){ loaded = true; refresh(); });
+}
+function connect(){
+  loadShared();
+  setInterval(function(){ if (document.visibilityState === 'visible' && view === 'stats') loadShared(); }, 20000);
+}
+
+/* ---------- hiển thị ---------- */
+function render(){
+  renderHeader();
+  if (!session) view = 'login';
+  if (view === 'login') renderLogin();
+  else if (view === 'home') renderHome();
+  else if (view === 'quiz') renderQuiz();
+  else if (view === 'result') renderResult();
+  else if (view === 'stats') renderStats();
+  try { window.scrollTo(0,0); } catch(e){}
+}
+function renderHeader(){
+  var on = !!session;
+  $('#nav').hidden = !on || view === 'quiz';
+  $('#who').hidden = !on;
+  if (on) $('#who-name').textContent = session.name;
+  $('#tab-home').classList.toggle('on', view === 'home' || view === 'result');
+  $('#tab-stats').classList.toggle('on', view === 'stats');
+}
+
+function renderLogin(){
+  main.innerHTML =
+    '<section class="login">' +
+      '<div class="login-art kana" aria-hidden="true"><span>あ</span><span>ア</span></div>' +
+      '<h1>Kiểm tra Hiragana và Katakana</h1>' +
+      '<p class="muted">Nhập họ tên và số điện thoại để vào làm bài. Điểm được lưu theo số điện thoại, hãy dùng cùng một số mỗi lần để xem tiến bộ.</p>' +
+      '<form id="login-form" class="card form" novalidate>' +
+        '<div class="field"><label for="f-name">Họ và tên</label>' +
+          '<input id="f-name" name="name" type="text" autocomplete="name" maxlength="60" placeholder="Nguyễn Văn A" required></div>' +
+        '<div class="field"><label for="f-phone">Số điện thoại</label>' +
+          '<input id="f-phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" maxlength="16" placeholder="0901234567" required></div>' +
+        '<p class="err" id="login-err" role="alert" hidden></p>' +
+        '<button class="btn btn-primary block" type="submit">Vào làm bài</button>' +
+      '</form>' +
+      '<ul class="facts"><li>2 phần thi</li><li>' + TOTAL + ' câu mỗi phần</li><li>Chấm điểm ngay khi nộp bài</li></ul>' +
+    '</section>';
+}
+function onLogin(e){
+  e.preventDefault();
+  var name = normName($('#f-name').value);
+  var phone = normPhone($('#f-phone').value);
+  var err = $('#login-err');
+  var msg = '';
+  if (name.length < 2) msg = 'Vui lòng nhập họ và tên (ít nhất 2 ký tự).';
+  else if (!validPhone(phone)) msg = 'Số điện thoại gồm 10 chữ số và bắt đầu bằng 0, ví dụ 0901234567.';
+  if (msg){ err.textContent = msg; err.hidden = false; return; }
+  session = makeSession(name, phone);
+  store.set('kana.session', { name: name, phone: phone });
+  view = 'home';
+  render();
+}
+function logout(){
+  session = null; quiz = null; result = null;
+  store.del('kana.session');
+  view = 'login';
+  render();
+}
+
+function bestFor(part){
+  var mine = allAttempts().filter(function(a){ return a.mid === session.mid && a.part === part; });
+  var best = null;
+  mine.forEach(function(a){ if (!best || a.pct > best.pct) best = a; });
+  return { n: mine.length, best: best };
+}
+function partCard(p){
+  var b = bestFor(p.key);
+  var line = b.best
+    ? 'Điểm cao nhất của bạn: <strong>' + b.best.score + '/' + b.best.total + '</strong> · ' + b.n + ' lần thi'
+    : 'Bạn chưa làm phần này.';
+  return '<article class="part">' +
+    '<div class="part-glyph kana" aria-hidden="true">' + p.sample + '</div>' +
+    '<div class="part-body">' +
+      '<p class="eyebrow">Phần ' + p.no + '</p>' +
+      '<h2>' + p.label + '</h2>' +
+      '<p class="muted">' + TOTAL + ' câu trắc nghiệm, lấy ngẫu nhiên từ ' + p.items.length + ' chữ gồm chữ cơ bản và chữ có dấu.</p>' +
+      '<p class="best">' + line + '</p>' +
+      '<button class="btn btn-primary" type="button" data-act="start" data-part="' + p.key + '">Bắt đầu phần ' + p.no + '</button>' +
+    '</div></article>';
+}
+function renderHome(){
+  main.innerHTML =
+    '<div class="stack">' +
+      '<div class="head"><h1>Xin chào, ' + esc(session.name) + '</h1>' +
+      '<p class="muted">Chọn một phần để làm bài. Mỗi phần được chấm điểm riêng.</p></div>' +
+      '<div class="parts">' + partCard(PARTS.hiragana) + partCard(PARTS.katakana) + '</div>' +
+    '</div>';
+}
+
+function dotsHTML(){
+  return quiz.questions.map(function(q, i){
+    var cls = 'dot' + (q.picked !== null ? ' done' : '') + (i === quiz.i ? ' cur' : '');
+    return '<button class="' + cls + '" type="button" data-act="goto" data-i="' + i + '" aria-label="Câu ' + (i+1) + (q.picked !== null ? ', đã trả lời' : '') + '">' + (i+1) + '</button>';
+  }).join('');
+}
+function renderQuiz(){
+  var q = quiz.questions[quiz.i], part = PARTS[quiz.part], n = quiz.questions.length;
+  var prompt = q.type === 'k2r'
+    ? '<p class="qcap">Chữ ' + part.label + ' này đọc là gì?</p><div class="qglyph kana">' + q.ch + '</div>'
+    : '<p class="qcap">Chọn chữ ' + part.label + ' đọc là:</p><div class="qromaji">' + esc(q.ro) + '</div>';
+  var opts = q.opts.map(function(o, j){
+    var sel = q.picked === o;
+    return '<button class="opt' + (q.type === 'r2k' ? ' kana' : '') + (sel ? ' sel' : '') + '" type="button" data-act="pick" data-i="' + j + '" aria-pressed="' + sel + '">' +
+      '<span class="key" aria-hidden="true">' + (j+1) + '</span>' + esc(o) + '</button>';
+  }).join('');
+  main.innerHTML =
+    '<div class="stack">' +
+      '<div class="qtop">' +
+        '<div class="qmeta"><p class="eyebrow">Phần ' + part.no + ' · ' + part.label + '</p><h2>Câu <span class="num">' + (quiz.i+1) + '/' + n + '</span></h2></div>' +
+        '<button class="btn small" type="button" data-act="exit">Thoát bài thi</button>' +
+      '</div>' +
+      '<div class="progress" role="progressbar" aria-valuemin="0" aria-valuemax="' + n + '" aria-valuenow="' + (quiz.i+1) + '"><i style="width:' + ((quiz.i+1)/n*100) + '%"></i></div>' +
+      '<section class="qcard">' + prompt + '<div class="opts">' + opts + '</div></section>' +
+      '<div class="qnav">' +
+        '<button class="btn" type="button" data-act="prev"' + (quiz.i === 0 ? ' disabled' : '') + '>Câu trước</button>' +
+        '<button class="btn" type="button" data-act="next"' + (quiz.i === n-1 ? ' disabled' : '') + '>Câu sau</button>' +
+      '</div>' +
+      '<div class="dots" id="dots">' + dotsHTML() + '</div>' +
+      '<div class="submitrow">' +
+        '<div><p class="sub" id="answered"></p><p class="note" id="note" role="status" hidden></p></div>' +
+        '<button class="btn btn-primary" type="button" id="submit" data-act="submit">Nộp bài</button>' +
+      '</div>' +
+    '</div>';
+  updateQuizMeta();
+}
+function updateQuizMeta(){
+  var n = quiz.questions.length, a = answeredCount(), left = n - a;
+  var d = $('#dots'); if (d) d.innerHTML = dotsHTML();
+  var an = $('#answered'); if (an) an.textContent = 'Đã trả lời ' + a + '/' + n + ' câu';
+  var note = $('#note'), btn = $('#submit');
+  if (note){
+    if (quiz.confirmEmpty && left > 0){
+      note.hidden = false;
+      note.textContent = 'Còn ' + left + ' câu chưa trả lời. Bấm "Vẫn nộp bài" để chấm điểm, hoặc làm tiếp.';
+    } else { note.hidden = true; note.textContent = ''; }
+  }
+  if (btn) btn.textContent = (quiz.confirmEmpty && left > 0) ? 'Vẫn nộp bài' : 'Nộp bài';
+}
+
+var STATUS = {
+  saving: ['', 'Đang lưu điểm…'],
+  shared: ['good', 'Đã lưu điểm vào bảng thống kê.'],
+  local: ['warnmsg', 'Chưa kết nối được kho dữ liệu chung nên điểm chỉ lưu trên máy này.'],
+  denied: ['warnmsg', 'Máy chủ không nhận bài làm này nên điểm chỉ lưu trên máy này.']
+};
+function updateResultStatus(){
+  var el = $('#save-status'); if (!el || !result) return;
+  var s = STATUS[result.status] || STATUS.saving;
+  el.className = 'status ' + s[0];
+  el.textContent = s[1];
+}
+function renderResult(){
+  var r = result, part = PARTS[r.part], rt = rate(r.pct);
+  var wrong = r.questions.filter(function(q){ return q.picked !== q.answer; });
+  var wrongHTML = wrong.length ? (
+    '<section class="stack"><h3>Các câu cần xem lại (' + wrong.length + ')</h3><div class="wrong">' +
+    wrong.map(function(q){
+      var youKana = q.type === 'r2k', rightKana = q.type === 'r2k';
+      var you = q.picked === null ? '<span class="you">Bạn chưa trả lời</span>'
+        : '<span class="you">Bạn chọn: <span class="' + (youKana ? 'kana' : '') + '">' + esc(q.picked) + '</span></span>';
+      return '<div class="witem"><div class="wglyph kana">' + q.ch + '</div><div class="wtext">' +
+        '<span class="right">Đúng: <span class="' + (rightKana ? 'kana' : '') + '">' + esc(q.answer) + '</span>' + (q.type === 'r2k' ? ' (' + esc(q.ro) + ')' : '') + '</span>' + you + '</div></div>';
+    }).join('') + '</div></section>'
+  ) : '<p class="status good">Bạn trả lời đúng tất cả các câu.</p>';
+  main.innerHTML =
+    '<div class="stack">' +
+      '<div class="resulthead">' +
+        '<p class="eyebrow">Kết quả · Phần ' + part.no + ' · ' + part.label + '</p>' +
+        '<div class="score">' + r.score + '<small>/' + r.total + '</small></div>' +
+        '<div><span class="pill ' + rt.c + '">' + rt.t + '</span> <span class="sub num">&nbsp;' + r.pct + '% số câu đúng</span></div>' +
+        '<p id="save-status" class="status" role="status"></p>' +
+      '</div>' +
+      '<div class="actions">' +
+        '<button class="btn btn-primary" type="button" data-act="retry">Làm lại phần ' + part.no + '</button>' +
+        '<button class="btn" type="button" data-act="home">Chọn phần khác</button>' +
+        '<button class="btn" type="button" data-act="stats">Xem thống kê</button>' +
+      '</div>' +
+      wrongHTML +
+    '</div>';
+  updateResultStatus();
+}
+
+/* ---------- thống kê ---------- */
+function aggregate(list){
+  var map = {}, out = [];
+  list.forEach(function(a){
+    var m = map[a.mid];
+    if (!m){
+      m = map[a.mid] = { mid:a.mid, name:a.name, mask:a.mask, last:0, hiragana:{n:0,best:null}, katakana:{n:0,best:null} };
+      out.push(m);
+    }
+    if (a.ts > m.last){ m.last = a.ts; m.name = a.name; m.mask = a.mask; }
+    var p = m[a.part];
+    p.n++;
+    if (!p.best || a.pct > p.best.pct || (a.pct === p.best.pct && a.ts > p.best.ts)) p.best = a;
+  });
+  return out.sort(function(x,y){ return y.last - x.last; });
+}
+function getList(){
+  var all = allAttempts();
+  return scope === 'me' ? all.filter(function(a){ return a.mid === session.mid; }) : all;
+}
+function avg(list, part){
+  var x = list.filter(function(a){ return a.part === part; });
+  if (!x.length) return '–';
+  return Math.round(x.reduce(function(s,a){ return s + a.pct; }, 0) / x.length) + '%';
+}
+function partCell(p){
+  if (!p.best) return '<span class="sub">Chưa thi</span>';
+  return '<div class="cellscore"><strong>' + p.best.score + '/' + p.best.total + '</strong>' +
+    '<div class="meter"><i style="width:' + Math.max(0, Math.min(100, p.best.pct)) + '%"></i></div>' +
+    '<span class="sub">' + p.best.pct + '% · ' + p.n + ' lần thi</span></div>';
+}
+function renderStats(){
+  main.innerHTML =
+    '<div class="stack">' +
+      '<div class="stats-head"><div class="head"><h1>Thống kê điểm</h1><p class="muted" id="stats-sub"></p></div>' +
+        '<div class="seg" role="group" aria-label="Phạm vi thống kê">' +
+          '<button class="segbtn" type="button" data-act="scope" data-scope="all">Tất cả thành viên</button>' +
+          '<button class="segbtn" type="button" data-act="scope" data-scope="me">Của tôi</button>' +
+        '</div></div>' +
+      '<div class="tiles" id="tiles"></div>' +
+      '<section class="sec"><div class="sechead"><h2 id="mem-title">Thành viên</h2>' +
+        '<input class="search" id="q" type="search" placeholder="Tìm theo tên" aria-label="Tìm thành viên" value="' + esc(search) + '"></div>' +
+        '<div id="members"></div></section>' +
+      '<section class="sec" id="mist-sec"></section>' +
+      '<section class="sec" id="recent-sec"></section>' +
+    '</div>';
+  updateStats();
+}
+function updateStats(){
+  if (view !== 'stats' || !$('#tiles')) return;
+  document.querySelectorAll('.segbtn').forEach(function(b){ b.classList.toggle('on', b.dataset.scope === scope); });
+  $('#stats-sub').textContent = online
+    ? 'Tự động cập nhật khi có thành viên nộp bài.'
+    : 'Chưa kết nối kho dữ liệu chung, đang hiển thị điểm lưu trên máy này.';
+  $('#q').hidden = scope === 'me';
+  $('#mem-title').textContent = scope === 'me' ? 'Điểm của tôi' : 'Thành viên';
+  if (!loaded){
+    $('#tiles').innerHTML = '<p class="muted">Đang tải dữ liệu…</p>';
+    $('#members').innerHTML = ''; $('#mist-sec').innerHTML = ''; $('#recent-sec').innerHTML = '';
+    return;
+  }
+  var list = getList();
+  var memberCount = aggregate(list).length;
+  function tile(label, val){ return '<div class="tile"><span class="sub">' + label + '</span><b>' + val + '</b></div>'; }
+  $('#tiles').innerHTML =
+    tile('Thành viên', memberCount) + tile('Lượt thi', list.length) +
+    tile('Trung bình Hiragana', avg(list,'hiragana')) + tile('Trung bình Katakana', avg(list,'katakana'));
+  updateMembers();
+  updateMistakes(list);
+  updateRecent(list);
+}
+function updateMembers(){
+  var el = $('#members'); if (!el) return;
+  var list = getList();
+  var rows = aggregate(list);
+  var q = fold(search.trim());
+  if (q && scope === 'all'){
+    rows = rows.filter(function(m){ return fold(m.name).indexOf(q) >= 0; });
+  }
+  if (!list.length){
+    el.innerHTML = '<div class="empty"><p>Chưa có bài làm nào. Điểm sẽ xuất hiện ở đây sau khi có người nộp bài.</p>' +
+      '<button class="btn btn-primary" type="button" data-act="home">Làm bài ngay</button></div>';
+    return;
+  }
+  if (!rows.length){ el.innerHTML = '<div class="empty"><p>Không tìm thấy thành viên phù hợp.</p></div>'; return; }
+  el.innerHTML = '<div class="tablewrap"><table><thead><tr><th>Thành viên</th><th>Hiragana</th><th>Katakana</th><th>Lần cuối</th></tr></thead><tbody>' +
+    rows.map(function(m){
+      return '<tr><td><div class="nm">' + esc(m.name) + '</div><div class="sub num">' + esc(m.mask) + '</div></td>' +
+        '<td>' + partCell(m.hiragana) + '</td><td>' + partCell(m.katakana) + '</td>' +
+        '<td class="sub nowrap num">' + fmtTime(m.last) + '</td></tr>';
+    }).join('') + '</tbody></table></div>';
+}
+function updateMistakes(list){
+  var sec = $('#mist-sec'); if (!sec) return;
+  if (!list.length){ sec.innerHTML = ''; return; }
+  var rows = Object.keys(PARTS).map(function(k){
+    var cnt = {};
+    list.filter(function(a){ return a.part === k; }).forEach(function(a){
+      Array.from(a.wrong).forEach(function(c){ if (CH2RO[c]) cnt[c] = (cnt[c] || 0) + 1; });
+    });
+    var top = Object.keys(cnt).sort(function(x,y){ return cnt[y] - cnt[x]; }).slice(0,8);
+    var chips = top.length ? top.map(function(c){
+      return '<span class="chip"><span class="kana">' + c + '</span>' + esc(CH2RO[c]) + ' <b>×' + cnt[c] + '</b></span>';
+    }).join('') : '<span class="sub">Chưa có chữ nào bị nhầm.</span>';
+    return '<div class="mrow"><span class="lab">' + PARTS[k].label + '</span>' + chips + '</div>';
+  }).join('');
+  sec.innerHTML = '<h2>Chữ hay nhầm</h2><div class="mist">' + rows + '</div>';
+}
+function updateRecent(list){
+  var sec = $('#recent-sec'); if (!sec) return;
+  if (!list.length){ sec.innerHTML = ''; return; }
+  var rows = list.slice(0,30).map(function(a){
+    var rt = rate(a.pct);
+    return '<tr><td class="sub nowrap num">' + fmtTime(a.ts) + '</td><td class="nm">' + esc(a.name) + '</td>' +
+      '<td>' + PARTS[a.part].label + '</td>' +
+      '<td><strong class="num">' + a.score + '/' + a.total + '</strong> <span class="pill ' + rt.c + '">' + rt.t + '</span></td></tr>';
+  }).join('');
+  sec.innerHTML = '<h2>Bài làm gần đây</h2><div class="tablewrap"><table><thead><tr><th>Thời gian</th><th>Thành viên</th><th>Phần</th><th>Điểm</th></tr></thead><tbody>' + rows + '</tbody></table></div>';
+}
+/* ---------- chia sẻ ---------- */
+function toggleShare(){
+  var p = $('#share-panel'), b = $('#share-btn');
+  p.hidden = !p.hidden;
+  b.setAttribute('aria-expanded', p.hidden ? 'false' : 'true');
+  if (!p.hidden){ var i = $('#share-link'); $('#copy-msg').textContent = ''; i.focus(); i.select(); }
+}
+function copyLink(){
+  var i = $('#share-link'), msg = $('#copy-msg');
+  function done(ok){
+    msg.textContent = ok ? 'Đã sao chép liên kết.' : 'Chưa sao chép được, hãy chọn liên kết ở trên và sao chép thủ công.';
+    if (!ok){ i.focus(); i.select(); }
+  }
+  try {
+    if (navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(i.value).then(function(){ done(true); }, function(){ done(false); });
+      return;
+    }
+  } catch(e){}
+  done(false);
+}
+
+/* ---------- sự kiện ---------- */
+document.addEventListener('click', function(e){
+  var t = e.target.closest('[data-act]');
+  if (!t) return;
+  switch (t.dataset.act){
+    case 'start': startQuiz(t.dataset.part); break;
+    case 'pick': pick(+t.dataset.i); break;
+    case 'next': if (quiz) go(quiz.i + 1); break;
+    case 'prev': if (quiz) go(quiz.i - 1); break;
+    case 'goto': go(+t.dataset.i); break;
+    case 'submit': if (quiz) submit(); break;
+    case 'exit': if (quiz) exitQuiz(t); break;
+    case 'home': view = 'home'; render(); break;
+    case 'stats': view = 'stats'; render(); break;
+    case 'retry': if (result) startQuiz(result.part); break;
+    case 'scope': scope = t.dataset.scope === 'me' ? 'me' : 'all'; updateStats(); break;
+    case 'logout': logout(); break;
+    case 'share': toggleShare(); break;
+    case 'copy': copyLink(); break;
+  }
+});
+document.addEventListener('submit', function(e){
+  if (e.target && e.target.id === 'login-form') onLogin(e);
+});
+document.addEventListener('input', function(e){
+  if (e.target && e.target.id === 'q'){ search = e.target.value; updateMembers(); }
+});
+document.addEventListener('keydown', function(e){
+  if (view !== 'quiz' || !quiz) return;
+  if (e.ctrlKey || e.metaKey || e.altKey) return;
+  if (e.target && e.target.closest && e.target.closest('input,textarea')) return;
+  if (e.key >= '1' && e.key <= '4') pick(+e.key - 1);
+  else if (e.key === 'ArrowRight') go(quiz.i + 1);
+  else if (e.key === 'ArrowLeft') go(quiz.i - 1);
+});
+
+/* ---------- khởi động ---------- */
+var saved = store.get('kana.session');
+if (saved && typeof saved.name === 'string' && typeof saved.phone === 'string' && validPhone(saved.phone) && normName(saved.name).length >= 2){
+  session = makeSession(normName(saved.name), saved.phone);
+  view = 'home';
+}
+$('#share-link').value = location.origin + '/';
+render();
+connect();
+})();
+</script>
+
+</body></html>
