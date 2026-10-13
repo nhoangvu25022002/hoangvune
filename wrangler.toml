@@ -1,8 +1,12 @@
 name = "hoangvune"
-main = "index.js"
-compatibility_date = "2026-01-01"
+main = "worker.js"
+compatibility_date = "2024-09-23"
+
+assets = { directory = "./public", binding = "ASSETS" }
+
 [[kv_namespaces]]
 binding = "KANA_DB"
-id = "27e06d30d2ad459dab535384a51433bc"
-[site]
-bucket = "./public"
+id = "27e06d30d2ad49dab535384a51433bc"
+
+[vars]
+ADMIN_PASSWORD = "Kiemtratiengnhat@123456"
